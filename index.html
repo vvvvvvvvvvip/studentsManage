@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>学生管理系统</title>
+</head>
+<style>	
+*{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.box{
+	margin-top: 15px;
+	width: 800px;
+    background-color: mintcream;
+	margin: 0 auto;
+	text-align: center;
+	border:1px solid #000;
+}
+table{
+	width: 100%;
+}
+.title{
+	padding: 50px 0 30px 0;
+}
+td{
+	float: left;
+	margin: 15px 0 0 40px;
+	width: 90px; 
+	height: 22px;
+	/*border-spacing*/
+	border-bottom: 1px solid #000;
+}
+.button{
+    display: inline-block;
+    font-size: 60px;
+    color: #fff;
+    background: mediumaquamarine;
+    width: 5%;
+    height: 40px;
+    border-radius: 50%;
+    float: left;
+    line-height: 40px;
+    margin-top: 20px;
+    margin-left: 5%;
+}
+.remove{
+    display: inline-block;
+    font-size: 30px;
+    color: #fff;
+    background: firebrick;
+    width: 6%;
+    height: 40px;
+    margin-bottom: 15px;
+    margin-left: 640px;
+    line-height: 40px;
+    margin-top: 20px;
+}
+.edit{
+	color: blue;
+	cursor: pointer;
+}
+.delete{
+	color: red;
+	cursor: pointer;
+}
+input{
+	width: 100%;
+	text-align: center;
+	border: none;
+	border-bottom: 1px solid #000;
+}
+.tip{
+	width: 300px;
+	height: 40px;
+	background: #ccc;
+	display: none;
+}
+.tip-box{
+    width: 100%;
+    height: 45px;
+    background: darkcyan;
+}
+</style>
+<body>
+	<div class="box">
+        <div class="tip-box">
+		<div class="tip"></div>
+        </div>
+		<h1 class="title">学生管理系统</h1>
+		<table class="table">
+			<thead>
+			<tr>	
+			    <td date-role="name">姓名</td>
+			    <td date-role="sex">性别</td>
+			    <td date-role="id">学号</td>
+			    <td date-role="number">身份证号</td>
+			    <td date-role="prevince">籍贯</td>
+                <td><input type="checkbox" class="t-check" value="'+stu.id+"></td>
+			</tr>
+		    </thead>
+            <tbody class="tbody"></tbody>
+		</table>
+
+		<div class="button">+</div>
+        <div class="remove">✖</div>	
+			
+			
+	</div>
+</body>
+<script>
+//数组存储学生  里面放对象  id和年龄数字类型
+// 遍历取出来的是每个对象
+//创建元素
+//后代选择器获取tbody
+// 申明变量students判断   数组存到localstorage里（转化为字符串）
+//创建渲染函数调用
+//添加点击事件面向页面 处理删除这个函数
+var tbody=document.getElementsByClassName("tbody")[0]
+if(localStorage.students){
+	var students=JSON.parse(localStorage.students)//如果存在赋值全局变量 
+}else{
+	var students=[{name:'张三',sex:'男',id:10001,number:'123...',prevince:'山西'},
+	{name:'李一',sex:'男',id:10002,number:'123...',prevince:'山西'},
+	{name:'王三',sex:'男',id:10003,number:'123...',prevince:'山西'},
+	{name:'刘三',sex:'男',id:10004,number:'123...',prevince:'山西'},
+	{name:'前三',sex:'男',id:10005,number:'123...',prevince:'山西'}]
+	localStorage.setItem('students',JSON.stringify(students)) 
+}
+
+//渲染函数
+var render=function(){
+    tbody.innerHTML=null
+    for(var i in students){
+       var stu=students[i]
+       var tr=document.createElement("tr")
+       tr.setAttribute('date-id',stu.id)
+       tr.innerHTML='<td date-role="name">'+stu.name+'</td><td date-role="sex">'+stu.sex+'</td><td>'+stu.id+'</td><td date-role="number">'+stu.number+'</td><td date-role="prevince">'+stu.prevince+'</td><td><input type="checkbox" class="ck" value="'+stu.id+'"></td>'
+       tbody.appendChild(tr)
+   }
+}
+render()
+
+var deletestudents=function(xuehao){
+    xuehao=Number(xuehao)
+    var arr=[]
+    for(var k in students){
+        var v = students[k]
+        if(v.id !== xuehao){
+            arr.push(v)
+        }
+    }
+    students=arr;
+    localStorage.setItem('students',JSON.stringify(students)) 
+}
+   //批量移除
+var remove=document.querySelector(".remove");
+    remove.onclick=function(){
+        var els=tbody.querySelectorAll('.ck')
+            for(var i=0;i<els.length;i++){
+                el=els[i]
+                if(el.checked){
+                    tbody.removeChild(el.parentElement.parentElement)
+                    deletestudents(el.value) 
+                }
+            }
+}
+
+var togglecheck = document.querySelector('.t-check')
+    togglecheck.onclick = function(){
+        els = tbody.querySelectorAll(".ck")
+        for(var i = 0;i < els.length;i++){
+            els[i].checked=this.checked;
+        }
+    }
+    // var deletehandle=function(e){
+    // 	tbody.removeChild(this.parentElement.parentElement)//tr
+    // 	var deleteid=Number(this.getAttribute("deleteid"))//获取属性
+    //     deletestudents(deleteid);
+    // }
+    // console.table(students)
+
+    // var edithandle=function(e){
+    // 	kebianji(this.parentElement.parentElement)
+    // }
+var students = (localStorage.students) ? (JSON.parse(localStorage.students)) : [];
+tbody.onclick = function(e){
+    var el = e.target;
+    	if(el.nodeName === 'TD'){
+            if(tbody.querySelector('.editing')){
+                toggleEdit(tbody.querySelector('.editing'))
+            }
+            toggleEdit(el.parentElement)
+        }else if(el.classList.contains('ck')){
+            var els = tbody.querySelectorAll('.ck')
+            for(var i = 0,el,j = 0;i < els.length;i++){
+                el = els[i];
+                if(el.checked){
+                    j += 1
+                } 
+                if(j === students.length){
+                    togglecheck.checked=true;
+                }else{
+                    togglecheck.checked=false;
+            }
+        }
+    }
+}
+
+//排序
+var thead = document.querySelector('.table thead');
+thead.onclick = function(e){
+    var el = e.target;
+    if (el.nodeName === 'TD'){
+        var sortKey = el.getAttribute('date-role');
+        var state = (el.getAttribute('flag') === 'true')? true:false;
+        el.setAttribute('flag',!state);
+        students.sort(function(x,y){
+            return state ? (x[sortKey] > y[sortKey]) : (x[sortKey] < y[sortKey]);
+        }) 
+        localStorage.setItem('students',JSON.stringify(students))
+        render();
+    }
+}
+    //添加数据
+var add = document.querySelector(".button")
+    // 界面和数据
+    add.onclick = function(){
+    	if(students.length){//判断student是否为空
+    		var xuehao = students[students.length-1].id+1
+    	}else{
+           var xuehao = 10001;
+       }
+       var stu = {id:xuehao,name:'',sex:'',number:'',prevince:''}
+        students.push(stu)//放数组里
+        localStorage.setItem('students',JSON.stringify(students))//放本地存储里
+        var tr = document.createElement("tr")
+        tr.setAttribute('date-id',stu.id)
+        tr.innerHTML = '<td data-role="name">'+stu.name+'</td><td data-role="sex">'+stu.sex+'</td><td>'+stu.id+'</td><td data-role="number">'+stu.number+'</td><td data-role="prenince">'+stu.prevince+'</td><td><input type="checkbox" class="ck" value="'+stu.id+'"></td>'
+        tbody.appendChild(tr)//放到页面中
+        toggleEdit(tr) 
+    }
+    //编辑
+var toggleEdit = function(tr){
+    var els = tr.querySelectorAll("td[date-role]")
+        if(tr.classList.contains('editing')){
+            tr.classList.remove('editing')
+         	for(var i = 0,el,temp;i < els.length;i++){
+         		el = els[i]//td
+         		var temp = el.querySelector('input').value
+         		el.innerHTML = temp     
+         	}
+         	tr.classList.remove('editing');
+        }else{
+         	tr.classList.add('editing')
+         	for(var i=0,el,temp;i<els.length;i++){
+         	el=els[i]//td
+         	var temp=el.innerHTML
+         	el.innerHTML='<input type="text" value="'+temp+'">'
+         	}
+         	els[0].querySelector('input').focus()
+        }
+}
+
+var tip=document.getElementsByClassName("tip")[0]
+var updatestudent=function(xuehao,k,v){
+        xuehao=Number(xuehao)
+        for(var i=0;i<students.length;i++){
+     	    if(students[i].id==xuehao){
+     		    students[i][k]=v
+     	}
+     	tip.style.display='block'
+        tip.innerHTML='保存成功'
+        setTimeout(function(){
+            tip.style.display='none';
+        },500)
+     	localStorage.setItem('students',JSON.stringify(students))
+     }
+}
+var timerId;//节流
+tbody.onkeyup=function(e){
+    var el=e.target;//找到底编辑的是哪个input
+    var xuehao=el.parentElement.parentElement.getAttribute('date-id');//
+    var k=el.parentElement.getAttribute('date-role');
+    var v=el.value;
+    tip.style.display='block';
+    tip.innerHTML='保存中';
+        clearTimeout(timerId);
+
+    timerId=setTimeout(function(){
+        updatestudent(xuehao,k,v);
+    },500)
+}
+
+//检测每一个input事件(tbody)
+</script>
+</html>
